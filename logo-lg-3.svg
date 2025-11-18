@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" viewBox="0 0 1024 512">
+  <rect width="100%" height="100%" fill="#000" />
+  <g transform="translate(80,56)">
+    <rect x="0" y="0" width="200" height="200" rx="24" fill="#556B2F" />
+    <rect x="240" y="0" width="200" height="200" rx="24" fill="#CC7351" />
+    <text x="180" y="140" fill="#fff" font-family="Inter, Arial" font-size="110" font-weight="800">L</text>
+    <text x="420" y="140" fill="#fff" font-family="Inter, Arial" font-size="110" font-weight="800">G</text>
+  </g>
+</svg>

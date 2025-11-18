@@ -1,0 +1,9 @@
+{
+  "banner": "Frete único: R$ 10,00 para qualquer bairro — Pagamento seguro pelo site",
+  "products": [
+    {"id":"croche1","name":"Bolsa de Crochê Verde","price":129.9,"order":1,"image":"https://via.placeholder.com/600x400?text=Croche+Verde"},
+    {"id":"sint1","name":"Bolsa Sintetico Marrom","price":179.9,"order":3,"image":"https://via.placeholder.com/600x400?text=Sintetico+Marrom"},
+    {"id":"croche2","name":"Bolsa Croche Terra","price":149.9,"order":2,"image":"https://via.placeholder.com/600x400?text=Croche+Terra"},
+    {"id":"sint2","name":"Bolsa Sintetico Preta","price":199.9,"order":4,"image":"https://via.placeholder.com/600x400?text=Sintetico+Preto"}
+  ]
+}

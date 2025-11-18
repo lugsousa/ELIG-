@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Minha Loja Artesanal</title>
+  <!-- Netlify CMS -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+</head>
+<body>
+  <div id="nc-root"></div>
+  <script>
+    // A Netlify CMS usa /admin/config.yml por padrão
+    // Abra /admin/ no Netlify depois de configurar Identity + Git Gateway
+  </script>
+</body>
+</html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin — Minha Loja Artesanal</title>
+  <style>
+    body{font-family:Inter, Arial, sans-serif;background:#f3f4f6;color:#111;margin:0;padding:20px}
+    .box{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+    h1{margin-top:0}
+    label{display:block;margin-top:12px;font-weight:600}
+    input[type=text], textarea, select{width:100%;padding:10px;margin-top:6px;border:1px solid #ddd;border-radius:8px}
+    .row{display:flex;gap:12px}
+    .col{flex:1}
+    button{background:#0b0b0b;color:#fff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer}
+    .small{font-size:0.9rem;color:#555}
+    .prod{border:1px dashed #ddd;padding:10px;border-radius:8px;margin-top:8px}
+    footer{margin-top:18px;color:#666}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Admin — Edição rápida</h1>
+    <p class="small">Esta é uma interface de administração simples que roda no navegador. As alterações são exportáveis como JSON para commit manual no repositório.</p>
+
+    <div id="login">
+      <label>Senha de administrador</label>
+      <input id="pw" type="password" placeholder="Senha">
+      <div style="margin-top:10px">
+        <button onclick="login()">Entrar</button>
+      </div>
+      <p class="small">Senha padrão: <strong>admin123</strong> (mude depois)</p>
+    </div>
+
+    <div id="editor" style="display:none">
+      <label>Banner (HTML permitido)</label>
+      <textarea id="banner" rows="2"></textarea>
+
+      <h3 style="margin-top:18px">Produtos</h3>
+      <div id="products"></div>
+      <div style="margin-top:10px">
+        <button onclick="addProduct()">Adicionar produto</button>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="exportJSON()">Exportar JSON</button>
+        <button onclick="copyToClipboard()">Copiar para clipboard</button>
+        <label style="align-self:center"><input type="file" id="fileinput" style="display:none" onchange="importFile(event)"> <span style="cursor:pointer;color:#0366d6">Importar JSON</span></label>
+      </div>
+
+      <footer>
+        <p class="small">Após exportar, substitua `content.json` no repositório (commit + deploy) para que o site reflita as alterações publicamente.</p>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // Senha simples (client-side) — não é seguro para produção.
+    const ADMIN_PASSWORD = 'admin123';
+
+    async function load(){
+      try{
+        const res = await fetch('/content.json',{cache:'no-store'});
+        if(!res.ok) return;
+        window._content = await res.json();
+      }catch(e){window._content = null}
+    }
+
+    function login(){
+      const v = document.getElementById('pw').value;
+      if(v === ADMIN_PASSWORD){
+        document.getElementById('login').style.display='none';
+        document.getElementById('editor').style.display='block';
+        initEditor();
+      } else alert('Senha incorreta');
+    }
+
+    function initEditor(){
+      const bannerEl = document.getElementById('banner');
+      const productsEl = document.getElementById('products');
+      const data = window._content || {banner:'Frete único: R$ 10,00 para qualquer bairro — Pagamento seguro pelo site', products:[]};
+      bannerEl.value = data.banner || '';
+      productsEl.innerHTML = '';
+      (data.products||[]).forEach(p=>renderProduct(p));
+    }
+
+    function renderProduct(p){
+      const wrap = document.getElementById('products');
+      const id = p.id || 'id_'+Math.random().toString(36).slice(2,8);
+      const div = document.createElement('div'); div.className='prod';
+      div.innerHTML = `
+        <div class="row">
+          <div class="col"><label>Nome</label><input class="pname" value="${escapeHtml(p.name||'')}"></div>
+          <div style="width:140px"><label>Preço</label><input class="pprice" value="${p.price||0}" type="text"></div>
+        </div>
+        <label>Imagem (URL)</label>
+        <input class="pimage" value="${escapeHtml(p.image||'')}">
+        <div style="margin-top:8px"><button onclick="removeProduct(this)">Remover</button></div>
+      `;
+      wrap.appendChild(div);
+    }
+
+    function addProduct(){ renderProduct({id:'id_'+Math.random().toString(36).slice(2,8),name:'Novo produto',price:0,image:''}); }
+    function removeProduct(btn){ btn.closest('.prod').remove(); }
+
+    function exportJSON(){
+      const banner = document.getElementById('banner').value;
+      const prods = Array.from(document.querySelectorAll('#products .prod')).map(div=>({
+        id: 'p_'+Math.random().toString(36).slice(2,8),
+        name: div.querySelector('.pname').value,
+        price: parseFloat(div.querySelector('.pprice').value) || 0,
+        image: div.querySelector('.pimage').value
+      }));
+      const out = {banner,products:prods};
+      const blob = new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'content.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    function copyToClipboard(){
+      const banner = document.getElementById('banner').value;
+      const prods = Array.from(document.querySelectorAll('#products .prod')).map(div=>({
+        id: 'p_'+Math.random().toString(36).slice(2,8),
+        name: div.querySelector('.pname').value,
+        price: parseFloat(div.querySelector('.pprice').value) || 0,
+        image: div.querySelector('.pimage').value
+      }));
+      const out = JSON.stringify({banner,products:prods},null,2);
+      navigator.clipboard.writeText(out).then(()=>alert('JSON copiado para o clipboard'))
+        .catch(()=>alert('Falha ao copiar'));
+    }
+
+    function importFile(e){
+      const f = e.target.files[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = function(){
+        try{ const data = JSON.parse(reader.result); window._content = data; initEditor(); alert('Importado com sucesso'); } catch(err){ alert('JSON inválido') }
+      };
+      reader.readAsText(f);
+    }
+
+    function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    load();
+  </script>
+</body>
+</html>
