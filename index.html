@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Loja Artesanal — Bolsas</title>
+  <meta name="description" content="Bolsas artesanais — crochê e sintético. Frete único R$ 10,00 para qualquer bairro."/>
+  <style>
+    :root{
+      --preto:#000000;
+      --verde-musgo:#556B2F;
+      --terra-cota:#CC7351;
+      --branco:#FFFFFF;
+      --card:#121212;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, Arial, sans-serif;background:linear-gradient(180deg,var(--preto),#0b0b0b);color:var(--branco);min-height:100vh;}
+
+    /* Header */
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--terra-cota),var(--verde-musgo));display:flex;align-items:center;justify-content:center;font-weight:700}
+    h1{font-size:1.1rem;margin:0}
+    .tag{font-size:0.85rem;opacity:0.9}
+
+    /* Top banner */
+    .banner{margin:18px auto;padding:14px;border-radius:10px;background:linear-gradient(90deg,var(--verde-musgo),var(--terra-cota));max-width:1100px;text-align:center;font-weight:600}
+
+    /* Layout */
+    .container{max-width:1100px;margin:18px auto;padding:0 18px;display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+
+    /* Product grid */
+    .produtos{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+    .card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    .card img{width:100%;height:220px;object-fit:cover;display:block}
+    .card .info{padding:12px}
+    .card h3{margin:0 0 8px 0;font-size:1rem}
+    .card p{margin:0 0 12px 0;color:#cfcfcf;font-size:0.9rem}
+    .price-row{display:flex;align-items:center;justify-content:space-between}
+    .btn{background:var(--terra-cota);border:none;padding:10px 12px;border-radius:10px;color:var(--preto);font-weight:600;cursor:pointer}
+
+    /* Cart */
+    aside.cart{background:#0f0f0f;padding:16px;border-radius:12px;height:fit-content;position:sticky;top:20px}
+    .cart h2{margin:0 0 12px 0}
+    .cart .line{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+    .cart img{width:56px;height:56px;object-fit:cover;border-radius:8px}
+    .qty{display:flex;gap:6px;align-items:center}
+    .small{font-size:0.9rem;color:#bdbdbd}
+    .total{margin-top:12px;font-weight:700}
+
+    /* Footer */
+    footer{max-width:1100px;margin:30px auto;padding:18px;color:#bdbdbd;text-align:center}
+
+    /* Responsive */
+    @media (max-width:980px){.container{grid-template-columns:1fr}.cart{position:relative;top:0}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">LG</div>
+      <div>
+        <h1>Minha Loja Artesanal</h1>
+        <div class="tag">Bolsas de crochê e sintético — Frete fixo R$ 10,00</div>
+      </div>
+    </div>
+    <nav aria-label="menu">
+      <button class="btn" onclick="scrollToCatalog()">Ver Produtos</button>
+    </nav>
+  </header>
+
+  <div class="banner">Frete único: <strong>R$ 10,00</strong> para qualquer bairro — Pagamento seguro pelo site</div>
+
+  <main class="container">
+    <section>
+      <h2 id="catalog">Catálogo</h2>
+      <div class="produtos" id="produtos"></div>
+    </section>
+
+    <aside class="cart" aria-label="Carrinho">
+      <h2>Carrinho</h2>
+      <div id="cart-items"></div>
+      <div class="total">Subtotal: <span id="subtotal">R$ 0,00</span></div>
+      <div class="small">Frete fixo: R$ 10,00</div>
+      <div style="margin-top:12px">
+        <button id="checkoutBtn" class="btn" onclick="checkout()" disabled>Finalizar Compra</button>
+      </div>
+      <div style="margin-top:10px;display:flex;align-items:center;gap:10px">
+        <div style="display:flex;gap:8px;align-items:center">
+          <img src="/icons/pix.svg" alt="Pix" width="36" height="36" style="border-radius:8px;background:#fff;padding:4px"/>
+          <img src="/icons/card.svg" alt="Cartão" width="36" height="36" style="border-radius:8px;background:transparent;padding:4px"/>
+          <img src="/icons/debit.svg" alt="Débito" width="36" height="36" style="border-radius:8px;background:transparent;padding:4px"/>
+        </div>
+        <div class="small">Aceitamos Pix, cartão de crédito e débito (integração com Mercado Pago).</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>© 2025 Minha Loja Artesanal — Feito com carinho</footer>
+
+  <script>
+    // Produtos de exemplo — agora carregados de `content.json` quando disponível
+    let products = [
+      {id:'croche1',name:'Bolsa de Crochê Verde',price:129.9,image:'https://via.placeholder.com/600x400?text=Croche+Verde'},
+      {id:'sint1',name:'Bolsa Sintético Marrom',price:179.9,image:'https://via.placeholder.com/600x400?text=Sintetico+Marrom'},
+      {id:'croche2',name:'Bolsa Crochê Terra',price:149.9,image:'https://via.placeholder.com/600x400?text=Croche+Terra'},
+      {id:'sint2',name:'Bolsa Sintético Preta',price:199.9,image:'https://via.placeholder.com/600x400?text=Sintetico+Preto'}
+    ];
+
+    // Banner / mensagem principal (padrão)
+    let bannerText = 'Frete único: R$ 10,00 para qualquer bairro — Pagamento seguro pelo site';
+
+    // Tenta carregar conteúdo personalizado de content.json
+    (async function loadContent(){
+      try{
+        const res = await fetch('/content.json', {cache: 'no-store'});
+        if(!res.ok) return;
+        const data = await res.json();
+        if(Array.isArray(data.products)) products = data.products;
+        if(data.banner) bannerText = data.banner;
+        // aplica banner atualizado
+        const bannerEl = document.querySelector('.banner');
+        if(bannerEl) bannerEl.innerHTML = bannerText.includes('<') ? bannerText : bannerText.replace(/\n/g,'<br>');
+        renderProducts(); renderCart();
+      }catch(err){
+        // não crítico — mantém defaults
+        console.warn('content.json não carregado:', err);
+      }
+    })();
+
+    const SHIPPING = 10.0; // frete fixo
+    let cart = JSON.parse(localStorage.getItem('cart_v1')) || {};
+
+    function formatBRL(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+
+    function renderProducts(){
+      const wrap = document.getElementById('produtos');
+      wrap.innerHTML='';
+      // Ordena por `order` (se presente) e depois por nome
+      const list = products.slice().sort((a,b)=>{
+        const oa = Number.isFinite(a.order) ? a.order : 9999;
+        const ob = Number.isFinite(b.order) ? b.order : 9999;
+        if(oa !== ob) return oa - ob;
+        return (a.name||'').localeCompare(b.name||'');
+      });
+      list.forEach(p=>{
+        const el = document.createElement('div'); el.className='card';
+        el.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <div class="info">
+            <h3>${p.name}</h3>
+            <p class="small">Feito à mão com materiais de qualidade.</p>
+            <div class="price-row">
+              <div><strong>${formatBRL(p.price)}</strong></div>
+              <button class="btn" onclick="addToCart('${p.id}')">Adicionar</button>
+            </div>
+          </div>`;
+        wrap.appendChild(el);
+      });
+    }
+
+    function saveCart(){localStorage.setItem('cart_v1',JSON.stringify(cart));renderCart()}
+
+    function addToCart(id){
+      cart[id] = cart[id] ? cart[id]+1 : 1; saveCart();
+    }
+
+    function removeFromCart(id){
+      delete cart[id]; saveCart();
+    }
+
+    function changeQty(id,delta){
+      cart[id] = Math.max(0,(cart[id]||0)+delta);
+      if(cart[id]===0) delete cart[id]; saveCart();
+    }
+
+    function renderCart(){
+      const el = document.getElementById('cart-items'); el.innerHTML='';
+      let subtotal = 0;
+      Object.keys(cart).forEach(id=>{
+        const p = products.find(x=>x.id===id);
+        const qty = cart[id];
+        subtotal += p.price*qty;
+        const line = document.createElement('div'); line.className='line';
+        line.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <div style="flex:1">
+            <div style="font-weight:600">${p.name}</div>
+            <div class="small">${formatBRL(p.price)} x ${qty}</div>
+            <div class="qty" style="margin-top:6px">
+              <button onclick="changeQty('${id}',-1)" class="btn">-</button>
+              <div style="min-width:28px;text-align:center">${qty}</div>
+              <button onclick="changeQty('${id}',1)" class="btn">+</button>
+              <button onclick="removeFromCart('${id}')" style="margin-left:8px;background:transparent;border:1px solid #333;color:#bbb;padding:6px;border-radius:8px;">Remover</button>
+            </div>
+          </div>`;
+        el.appendChild(line);
+      });
+      document.getElementById('subtotal').innerText = formatBRL(subtotal + SHIPPING);
+      document.getElementById('checkoutBtn').disabled = Object.keys(cart).length===0;
+    }
+
+    // Mock checkout: envia o pedido para seu backend que chamará a API de pagamentos (Mercado Pago)
+    async function checkout(){
+      const items = Object.keys(cart).map(id=>{
+        const p = products.find(x=>x.id===id);
+        return {id:p.id,name:p.name,unit_price:p.price,quantity:cart[id]}
+      });
+      const payload = {items,shipping:SHIPPING,total:items.reduce((s,i)=>s+i.unit_price*i.quantity,0)+SHIPPING};
+
+      try{
+        document.getElementById('checkoutBtn').innerText='Conectando...';
+        const res = await fetch('/.netlify/functions/create_checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        if(!res.ok) throw new Error('Erro ao criar checkout');
+        const data = await res.json();
+        window.location.href = data.checkout_url;
+      }catch(err){
+        alert('Não foi possível iniciar o pagamento. Verifique a conexão e tente novamente.');
+        console.error(err);
+      }finally{document.getElementById('checkoutBtn').innerText='Finalizar Compra'}
+    }
+
+    function scrollToCatalog(){document.getElementById('catalog').scrollIntoView({behavior:'smooth'})}
+
+    // inicializa
+    renderProducts(); renderCart();
+  </script>
+</body>
+</html>
